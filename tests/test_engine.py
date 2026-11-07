@@ -46,8 +46,11 @@ def test_keychain_is_printable(fixture_svg, raster):
 
 def test_flat_option_gives_one_height(fixture_svg):
     geoms, _ = engine.parse_svg_auto(fixture_svg("tricolour.svg"), prefer_raster=False, **QUIET)
-    meshes = engine.build_keychain_meshes(geoms, stepped_heights=False, thickness_mm=4.0, **QUIET)
-    assert {round(m.bounds[1][2], 2) for m in meshes.values()} == {4.0}
+    plaque = engine.build_plaque_meshes(geoms, stepped_heights=False, thickness_mm=3.0, **QUIET)
+    assert {round(m.bounds[1][2], 2) for m in plaque.values()} == {3.0}
+    # Keychains use a fixed relief and ignore thickness_mm (documented in the README).
+    key = engine.build_keychain_meshes(geoms, stepped_heights=False, thickness_mm=3.0, **QUIET)
+    assert {round(m.bounds[1][2], 2) for m in key.values()} == {engine._KC_FLAG_BASE}
 
 
 def test_keychain_has_a_ring_hole_and_plaque_does_not(fixture_svg):

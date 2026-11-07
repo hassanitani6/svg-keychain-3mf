@@ -426,3 +426,29 @@ def test_missing_git_falls_back_to_listing_files(repo, monkeypatch):
         return real(cmd, *a, **k)
     monkeypatch.setattr(t.subprocess, "run", no_git)
     assert "src/svg_keychain_3mf/engine.py" in t.tracked_files(repo)
+
+
+@pytest.mark.parametrize("author", [{"is_bot": True, "login": "app/dependabot"},
+                                    {"login": "app/github-actions"},
+                                    {"is_bot": True, "login": "renovate"}])
+def test_bots_are_skipped_in_the_shape_gh_really_returns(repo, tmp_path, author):
+    data = issue()
+    data["author"] = author
+    status, report = run(repo, tmp_path, data=data)
+    assert status == "skipped" and calls(tmp_path) == 0
+
+
+def test_dropped_citations_are_announced_for_every_classification(repo, tmp_path):
+    fake = (tmp_path / "fake.py").read_text(encoding="utf-8").replace(
+        'good["findings"][0]["file"] = "src/svg_keychain_3mf/hole_placer.py"; emit(good)',
+        'good["findings"][0]["file"] = "src/svg_keychain_3mf/hole_placer.py"; good["classification"] = "question"; emit(good)')
+    (tmp_path / "fake.py").write_text(fake, encoding="utf-8")
+    status, report = run(repo, tmp_path, "fakepath")
+    assert "No finding survived validation" in report
+
+
+def test_more_token_shapes_are_removed(repo, tmp_path):
+    what = "token glpat-" + "a" * 20 + " and xoxb-" + "1" * 12 + " and AIza" + "B" * 35
+    run(repo, tmp_path, data=issue(what=what))
+    sent = (tmp_path / "state" / "prompt.txt").read_text(encoding="utf-8")
+    assert "glpat-" not in sent and "xoxb-" not in sent and "AIza" not in sent

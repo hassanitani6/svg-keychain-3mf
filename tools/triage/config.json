@@ -1,20 +1,40 @@
 {
   "enabled": true,
   "model": "sonnet",
-  "max_budget_usd_per_run": 0.50,
-  "monthly_budget_usd": 5.00,
+  "max_budget_usd_per_run": 0.5,
+  "monthly_budget_usd": 5.0,
   "timeout_seconds": 300,
   "max_retries": 1,
-  "bot_authors": ["github-actions[bot]", "dependabot[bot]"],
-  "readable_paths": ["src/", "tests/", "examples/", "docs/", "README.md", "pyproject.toml"],
+  "bot_authors": [
+    "github-actions[bot]",
+    "dependabot[bot]",
+    "app/github-actions",
+    "app/dependabot"
+  ],
+  "readable_paths": [
+    "src/",
+    "tests/",
+    "examples/",
+    "docs/",
+    "README.md",
+    "pyproject.toml"
+  ],
   "provider_command": [
-    "claude", "--bare", "-p",
-    "--output-format", "json",
-    "--json-schema", "{schema}",
-    "--model", "{model}",
-    "--max-budget-usd", "{budget}",
-    "--tools", "Read,Grep,Glob",
-    "--allowedTools", "Read,Grep,Glob",
+    "claude",
+    "--bare",
+    "-p",
+    "--output-format",
+    "json",
+    "--json-schema",
+    "{schema}",
+    "--model",
+    "{model}",
+    "--max-budget-usd",
+    "{budget}",
+    "--tools",
+    "Read,Grep,Glob",
+    "--allowedTools",
+    "Read,Grep,Glob",
     "--no-session-persistence"
   ]
 }

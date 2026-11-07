@@ -37,7 +37,8 @@ PII_PATTERNS = {
     "email address": r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
     "home-folder path": r"(?:/Users/|/home/|[A-Za-z]:\\Users\\)[^/\\\s]+",
     "phone number": r"(?<!\d)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}(?!\d)",
-    "access token or key": r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16})\b",
+    "access token or key": r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}"
+                           r"|glpat-[A-Za-z0-9_-]{20,}|xox[abposr]-[A-Za-z0-9-]{10,}|AIza[0-9A-Za-z_-]{35})\b",
 }
 
 
@@ -114,8 +115,10 @@ class Checks:
 
 def run_checks(issue: dict, cfg: dict, repo: Path, known_issues: list[dict] | None) -> Checks:
     c = Checks()
-    author = (issue.get("author") or {}).get("login", "")
-    if author in cfg["bot_authors"] or author.endswith("[bot]"):
+    who = issue.get("author") or {}
+    author = who.get("login", "")
+    # `gh` reports bots as {"is_bot": true, "login": "app/<name>"}; the REST API uses "<name>[bot]".
+    if who.get("is_bot") or author.startswith("app/") or author.endswith("[bot]") or author in cfg["bot_authors"]:
         c.skip_reason = f"opened by a bot ({author}); bots are never triaged, to avoid loops"
         return c
 
@@ -385,9 +388,13 @@ def ai_step(issue: dict, checks: Checks, root: Path, cfg: dict, known_issues, re
         status = "draft-ready"
         if not validation["schema_ok"]:
             status = "needs-human"
+        elif not validation["kept"] and validation["dropped"]:
+            notes.append("No finding survived validation; every citation the AI gave was rejected.")
+            if answer["classification"] in ("bug", "duplicate"):
+                status = "needs-human"
         elif not validation["kept"] and answer["classification"] == "bug":
             status = "needs-human"
-            notes.append("No finding survived validation.")
+            notes.append("No finding survived validation (the AI cited nothing).")
         if refresh is not None:
             latest = refresh(number)
             if (sha256(latest.get("body") or "") != issue["body_sha256"]

@@ -30,7 +30,7 @@ def _parser() -> argparse.ArgumentParser:
     g.add_argument("-o", "--out-dir", type=Path, help="folder for the 3MF files (default: next to the input)")
     g.add_argument("--outputs", default="keychain", help="comma list of keychain,plaque,magnet (default: keychain)")
     g.add_argument("--size", type=float, help="longest side in mm (default 60 keychain/magnet, 100 plaque)")
-    g.add_argument("--thickness", type=float, default=5.0, help="mm (default 5)")
+    g.add_argument("--thickness", type=float, default=5.0, help="mm, plaques and magnets (default 5); keychains use a fixed 4-5.5 mm relief")
     g.add_argument("--hole", type=float, default=3.0, help="key-ring hole diameter in mm (default 3)")
     g.add_argument("--nozzle", type=float, default=0.4, choices=(0.2, 0.4), help="nozzle diameter in mm")
     g.add_argument("--min-area", type=float, default=1.0, help="drop colour pieces smaller than this many mm²")
@@ -38,7 +38,7 @@ def _parser() -> argparse.ArgumentParser:
     g.add_argument("--double-sided", action="store_true", help="keychain only: flag reads on both faces")
     g.add_argument("--base-colour", help="add a backing plate in this hex colour, e.g. '#0f4c81'")
     g.add_argument("--base-thickness", type=float, default=2.0)
-    g.add_argument("--merge-threshold", type=int, default=15, help="merge colours closer than this (0-100 Lab distance)")
+    g.add_argument("--merge-threshold", type=int, default=15, help="merge colours closer than this RGB distance (0-441; default 15)")
     g.add_argument("--path-parser", action="store_true",
                    help="skip the render-then-trace reader and use the plain SVG path parser")
     g.add_argument("-q", "--quiet", action="store_true")
@@ -76,6 +76,8 @@ def _generate(args) -> int:
     if args.base_colour and not re.fullmatch(r"#?[0-9A-Fa-f]{6}", args.base_colour):
         print("error: --base-colour must be a hex colour such as '#0f4c81'", file=sys.stderr)
         return 2
+    if "keychain" in wanted and args.thickness != 5.0 and not args.quiet:
+        print("note: --thickness does not apply to keychains (fixed 4-5.5 mm relief)", file=sys.stderr)
     if args.base_colour and not args.base_colour.startswith("#"):
         args.base_colour = "#" + args.base_colour
 

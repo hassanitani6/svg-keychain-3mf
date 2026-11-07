@@ -32,22 +32,24 @@ The manual route always works; the helper in step 2 and the AI step below are op
 likely involved. What it does and does not do:
 
 - Runs **only** when you type the command, on your computer. It never posts, labels, closes or edits anything.
-- Sends the issue title and body to Anthropic's API, after removing email addresses, phone numbers, home-folder
-  paths and tokens. It refuses to run on incomplete reports, bot-authored issues, or text that looks like
+- Sends the issue title and body to Anthropic's API, after trying to remove email addresses, North American phone
+  numbers, home-folder paths and common access tokens (pattern-based, not guaranteed — read `prompt.txt` with
+  `--dry-run` first if in doubt). It refuses to run on incomplete reports, bot-authored issues, or text that looks like
   prompt injection.
 - The model gets only the Read, Grep and Glob tools (no shell, no web), and your shell's GitHub tokens are not
   passed to it. Those tools are not a sandbox: assume it could read any file your user account can, and that
   whatever it reads is sent to Anthropic. Run this step from a user account or container that holds only this
   repository.
 - Every finding must cite a file, line range and exact quote. The script checks each citation against the code and
-  drops any that do not match; if nothing survives, the report says so.
+  drops any that do not match. If findings were given but none survived, the report says so (and bug reports are
+  marked needs-human).
 - Treat the report as a lead, not an answer. If you quote it publicly, say it was AI-assisted.
 
 **Cost.** Uses an Anthropic API key (`ANTHROPIC_API_KEY`), billed per use — `--bare` mode does not use a Claude
 subscription. Limits in `tools/triage/config.json`: `max_budget_usd_per_run` (passed to the CLI) and
 `monthly_budget_usd` (checked against `.triage/ledger.jsonl` before each run, leaving room for every retry).
-Every attempt is recorded: a successful one at the cost the CLI reports, a failed, timed-out or unreported one
-at the full per-run budget. `"model": "sonnet"` follows Anthropic's current Sonnet model; pin a full model ID
+Every attempt is recorded: at the cost the CLI reports when it reports one (including errors it prices), and at
+the full per-run budget when it times out, crashes or reports no cost. `"model": "sonnet"` follows Anthropic's current Sonnet model; pin a full model ID
 if you need runs to stay comparable. Also set a spending limit on the key itself in the Anthropic Console:
 that is the only limit enforced outside this script.
 

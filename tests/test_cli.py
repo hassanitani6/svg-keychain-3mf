@@ -97,3 +97,8 @@ def test_non_latin_file_name_with_windows_style_output(tmp_path):
     r = run("generate", str(src), "-o", str(tmp_path / "out"), "-q", "--path-parser", env=env)
     assert r.returncode == 0, r.stderr
     assert (tmp_path / "out" / "علم_keychain.3mf").exists()
+
+
+def test_thickness_on_keychains_is_reported_not_silently_ignored(tmp_path):
+    r = run("generate", str(FIXTURES / "tricolour.svg"), "-o", str(tmp_path), "--thickness", "3", "--path-parser")
+    assert r.returncode == 0 and "does not apply to keychains" in r.stderr
