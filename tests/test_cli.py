@@ -9,9 +9,10 @@ from svg_keychain_3mf import doctor
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-def run(*args):
-    return subprocess.run([sys.executable, "-m", "svg_keychain_3mf", *args],
-                          capture_output=True, text=True, encoding="utf-8", timeout=300)
+def run(*args, env=None):
+    # errors="replace": on Windows the tool's piped output is not UTF-8.
+    return subprocess.run([sys.executable, "-m", "svg_keychain_3mf", *args], env=env,
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300)
 
 
 def test_generate_writes_requested_files(tmp_path):
@@ -85,3 +86,14 @@ def test_doctor_hides_unusual_home_paths(monkeypatch, tmp_path):
         r"C:\Users\Roberto\AppData\x.dll /home/someone/lib /Users/Other/x ZOË ÅNGSTRÖM")
     for leak in ("Zoë", "Roberto", "someone", "Other", "ZOË"):
         assert leak not in text, leak
+
+
+def test_non_latin_file_name_with_windows_style_output(tmp_path):
+    import os
+    import shutil
+    src = tmp_path / "علم.svg"
+    shutil.copy(FIXTURES / "tricolour.svg", src)
+    env = {**os.environ, "PYTHONIOENCODING": "cp1252"}
+    r = run("generate", str(src), "-o", str(tmp_path / "out"), "-q", "--path-parser", env=env)
+    assert r.returncode == 0, r.stderr
+    assert (tmp_path / "out" / "علم_keychain.3mf").exists()

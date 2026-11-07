@@ -144,6 +144,10 @@ def _gui() -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Windows pipes use a legacy encoding; never crash just because a file name can't be shown in it.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="backslashreplace")
     args = _parser().parse_args(argv)
     if args.command == "generate":
         return _generate(args)
