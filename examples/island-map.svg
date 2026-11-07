@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic example (CC0). An invented "map" with a two-colour flag pattern,
+     one offshore island big enough to print and one speck that is too small. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <path fill="#c8102e" d="M 40,60 C 90,10 190,20 230,50 C 270,80 250,150 210,190 C 170,240 80,250 50,200 C 20,160 10,100 40,60 Z"/>
+  <path fill="#ffffff" d="M 60,120 C 100,100 180,100 220,120 C 215,150 205,170 195,185 C 150,175 100,175 55,170 C 50,150 52,135 60,120 Z"/>
+  <path fill="#c8102e" d="M 300,200 C 320,185 350,190 355,210 C 360,235 330,250 310,240 C 295,232 290,212 300,200 Z"/>
+  <path fill="#c8102e" d="M 380,40 L 381.2,40 L 381.2,41.2 L 380,41.2 Z"/>
+</svg>

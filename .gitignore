@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.DS_Store
+# Local maintainer triage workspace: issue snapshots and draft reports never leave your machine.
+.triage/
+# Generated models
+*_keychain.3mf
+*_plaque.3mf
+*_magnet.3mf

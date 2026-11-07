@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["classification", "confidence", "summary", "findings", "suggested_labels", "duplicate_of", "questions_for_reporter"],
+  "properties": {
+    "classification": {"type": "string", "enum": ["bug", "enhancement", "question", "needs-info", "duplicate", "not-actionable"]},
+    "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+    "summary": {"type": "string", "maxLength": 400},
+    "findings": {
+      "type": "array", "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "file", "line_start", "line_end", "evidence_quote", "confidence"],
+        "properties": {
+          "claim": {"type": "string", "maxLength": 300},
+          "file": {"type": "string", "maxLength": 200},
+          "line_start": {"type": "integer", "minimum": 1},
+          "line_end": {"type": "integer", "minimum": 1},
+          "evidence_quote": {"type": "string", "maxLength": 400},
+          "confidence": {"type": "string", "enum": ["high", "medium", "low"]}
+        }
+      }
+    },
+    "suggested_labels": {"type": "array", "maxItems": 4, "items": {"type": "string", "maxLength": 40}},
+    "duplicate_of": {"type": ["integer", "null"]},
+    "questions_for_reporter": {"type": "array", "maxItems": 3, "items": {"type": "string", "maxLength": 200}}
+  }
+}

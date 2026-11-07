@@ -1,0 +1,5 @@
+{
+  "allowed": ["bug", "enhancement", "question", "documentation", "needs-info", "duplicate-candidate",
+              "svg-reader", "3mf-output", "gui", "packaging", "printability"],
+  "never_suggest": ["wontfix", "invalid", "duplicate", "good first issue", "help wanted", "security"]
+}

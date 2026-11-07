@@ -1,0 +1,52 @@
+name: Bug report
+description: Something produced a wrong, unprintable or missing result.
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you file:** issues are public. Do not paste passwords, tokens, your address, or
+        files you are not allowed to share. Any file you attach can be downloaded by anyone.
+        The maintainer may use an AI assistant to help read reports; nothing is processed
+        automatically when you submit. See "Privacy" in the README.
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Environment (`svg-keychain doctor` output)
+      description: Run `svg-keychain doctor` in a terminal and paste the result. Check it first; it should not contain personal details.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Include the exact error message, or describe what looks wrong in Bambu Studio's preview or the printed part.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The command or app settings you used (output type, size, nozzle, double-sided, base colour…).
+      placeholder: |
+        svg-keychain generate my-design.svg --outputs keychain --nozzle 0.4
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Input file
+      description: |
+        If you can, attach the smallest SVG that shows the problem (zip it first, since GitHub does not accept .svg).
+        Only attach designs you have the right to share publicly. Simplified or redrawn test shapes are perfect.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?

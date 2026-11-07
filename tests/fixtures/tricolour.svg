@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic example (CC0). Three vertical bands with rounded ends. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <path fill="#00838f" d="M 0,100 Q 0,0 50,0 L 100,0 L 100,200 L 50,200 Q 0,200 0,100 Z"/>
+  <path fill="#ffffff" d="M 100,0 L 200,0 L 200,200 L 100,200 Z"/>
+  <path fill="#6a1b9a" d="M 200,0 L 250,0 Q 300,0 300,100 Q 300,200 250,200 L 200,200 Z"/>
+</svg>

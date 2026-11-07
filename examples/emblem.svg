@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic example (CC0). A field with a ring and a star: nested colours, a hole, and a shared edge. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <rect x="0" y="0" width="300" height="300" rx="40" fill="#003f87"/>
+  <path fill="#f2c300" fill-rule="evenodd" d="M 150,40 A 110,110 0 1 1 149.9,40 Z M 150,70 A 80,80 0 1 0 150.1,70 Z"/>
+  <path fill="#ffffff" d="M 150,85 L 165,130 L 212,130 L 174,158 L 188,204 L 150,176 L 112,204 L 126,158 L 88,130 L 135,130 Z"/>
+</svg>

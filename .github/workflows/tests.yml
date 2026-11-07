@@ -1,0 +1,61 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Read-only token; this workflow never needs to write to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Install the Cairo library (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libcairo2
+      - name: Install the Cairo library (macOS)
+        if: runner.os == 'macOS'
+        run: brew install cairo
+      - name: Install (with the optional SVG renderer)
+        run: uv sync --locked --extra render --python ${{ matrix.python }}
+      - name: Doctor report
+        run: uv run --extra render svg-keychain doctor
+      # On Linux and macOS the renderer must really load, or its tests would be skipped silently.
+      # Windows has no simple Cairo install, so there the path parser is what gets tested.
+      - name: Check the renderer is active
+        if: runner.os != 'Windows'
+        run: |
+          uv run --extra render svg-keychain doctor --json | grep -q '"svg_reader": "render-then-trace'
+      - name: Tests
+        run: uv run --extra render pytest -q
+
+  minimal:
+    name: Without the optional renderer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - run: uv sync --locked --python 3.12
+      - run: uv run pytest -q

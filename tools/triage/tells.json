@@ -1,0 +1,9 @@
+[
+  {"id": "ignore-instructions", "pattern": "(?i)\\b(ignore|disregard|forget)\\b.{0,40}\\b(previous|prior|above|earlier|all)\\b.{0,20}\\b(instructions?|rules|prompts?)\\b"},
+  {"id": "role-change", "pattern": "(?i)\\byou are now\\b|\\bact as (the )?(maintainer|admin|system)\\b|\\bnew instructions?:"},
+  {"id": "system-prompt", "pattern": "(?i)\\bsystem prompt\\b|<\\s*/?\\s*(system|assistant|instructions?)\\s*>"},
+  {"id": "exfiltration", "pattern": "(?i)\\b(print|reveal|send|post|upload|curl|wget)\\b.{0,40}\\b(api[_ -]?key|token|secret|credential|env(ironment)?( variables?)?)\\b"},
+  {"id": "tool-escalation", "pattern": "(?i)\\b(run|execute)\\b.{0,30}\\b(bash|shell|command|script)\\b.{0,30}\\b(as|with)\\b.{0,20}\\b(maintainer|admin|sudo)\\b"},
+  {"id": "long-base64", "pattern": "[A-Za-z0-9+/]{200,}={0,2}"},
+  {"id": "unicode-tags", "pattern": "[\\U000E0000-\\U000E007F]{4,}"}
+]
