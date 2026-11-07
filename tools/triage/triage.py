@@ -190,7 +190,7 @@ def validate_schema(value, schema, where="$") -> list[str]:
 
 def tracked_files(repo: Path) -> set[str]:
     try:
-        r = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True, text=True)
+        r = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True, text=True, encoding="utf-8")
     except FileNotFoundError:
         r = None
     if r is not None and r.returncode == 0 and r.stdout.strip():
@@ -308,7 +308,7 @@ def call_provider(prompt: str, cfg: dict, budget: float, repo: Path, charge) -> 
     last_error = "no attempt made"
     for _ in range(attempts):
         try:
-            r = subprocess.run(cmd, input=prompt, capture_output=True, text=True, cwd=repo, env=env,
+            r = subprocess.run(cmd, input=prompt, capture_output=True, text=True, encoding="utf-8", cwd=repo, env=env,
                                timeout=cfg["timeout_seconds"])
         except subprocess.TimeoutExpired:
             charge(budget, "timeout (worst-case cost recorded)")
@@ -461,7 +461,7 @@ def save_snapshot(issue: dict, root: Path, name: str = "snapshot.json") -> Path:
 def fetch(number: int, root: Path, name: str = "snapshot.json") -> Path:
     fields = "number,title,body,author,createdAt,updatedAt,labels,state,stateReason"
     r = subprocess.run(["gh", "issue", "view", str(number), "--json", fields],
-                       capture_output=True, text=True, cwd=root)
+                       capture_output=True, text=True, encoding="utf-8", cwd=root)
     if r.returncode != 0:
         raise Stop(f"gh issue view failed: {r.stderr.strip()[:300]}")
     return save_snapshot(json.loads(r.stdout), root, name)

@@ -27,7 +27,7 @@ def pytest(cwd: Path, *args: str, timeout: int) -> tuple[int, str]:
            "PYTHONDONTWRITEBYTECODE": "1"}
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *args],
-                           cwd=cwd, capture_output=True, text=True, timeout=timeout, env=env)
+                           cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=timeout, env=env)
     except subprocess.TimeoutExpired:
         return 124, f"timed out after {timeout} s"
     return r.returncode, (r.stdout + r.stderr)[-1500:]

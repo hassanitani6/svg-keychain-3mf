@@ -11,7 +11,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 def run(*args):
     return subprocess.run([sys.executable, "-m", "svg_keychain_3mf", *args],
-                          capture_output=True, text=True, timeout=300)
+                          capture_output=True, text=True, encoding="utf-8", timeout=300)
 
 
 def test_generate_writes_requested_files(tmp_path):
@@ -73,7 +73,7 @@ def test_generate_works_without_tk(tmp_path):
             "builtins.__import__ = no_tk\n"
             "from svg_keychain_3mf.cli import main\n"
             f"sys.exit(main(['generate', {str(FIXTURES / 'tricolour.svg')!r}, '-o', {str(tmp_path)!r}, '-q', '--path-parser']))")
-    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=300)
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8", timeout=300)
     assert r.returncode == 0, r.stderr
 
 

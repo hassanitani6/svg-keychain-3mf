@@ -492,7 +492,7 @@ def parse_svg_raster(filepath, log=None, target_mm=60.0, min_area_mm2=1.0,
     from PIL import Image as _Image
     from shapely.validation import make_valid as _make_valid
 
-    svg_text = Path(filepath).read_text(errors='replace')
+    svg_text = Path(filepath).read_text(encoding='utf-8', errors='replace')
     palette = _rtv_declared_palette(svg_text)
     if not palette:
         raise ValueError("no declared colours in SVG")
