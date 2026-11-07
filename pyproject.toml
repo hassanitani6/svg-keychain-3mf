@@ -1,6 +1,6 @@
 [project]
 name = "svg-keychain-3mf"
-version = "0.1.0"
+version = "0.1.1"
 description = "Turn flat-colour SVGs (like flag maps) into multi-colour 3MF keychains, plaques and magnets for Bambu Studio."
 readme = "README.md"
 license = "MIT"

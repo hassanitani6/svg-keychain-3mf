@@ -43,6 +43,17 @@ Cairo library on your system: `brew install cairo` on macOS, `sudo apt install l
 the tool still works using its built-in path parser — `doctor` tells you which reader is active. On Windows,
 expect the path parser unless you have installed Cairo yourself; the automated Windows tests use the path parser.
 
+## Updating
+
+Installed with pipx: run the same install command with `--force`:
+
+```bash
+pipx install --force "svg-keychain-3mf[render] @ git+https://github.com/hassanitani6/svg-keychain-3mf"
+```
+
+From a clone: `git pull` then `uv sync --extra render`. `svg-keychain --version` shows what you have; changes are
+listed in [CHANGELOG.md](CHANGELOG.md).
+
 ## Quick start
 
 Desktop app:
