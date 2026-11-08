@@ -2,7 +2,7 @@
 
 All notable changes to this project are listed here. Versions follow [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## 0.1.2 — 2026-11-08
 
 ### Fixed
 - `svg-keychain generate` no longer replaces files without asking. It refuses to write over the input file (for
