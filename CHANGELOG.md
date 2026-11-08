@@ -2,6 +2,18 @@
 
 All notable changes to this project are listed here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixed
+- `svg-keychain generate` no longer replaces files without asking. It refuses to write over the input file (for
+  example `b_keychain.3mf` with `--outputs keychain`) and over any 3MF that already exists; pass the new
+  `--overwrite` option to replace earlier outputs. Nothing is written if any planned output is refused.
+- The desktop app never writes over the file it is reading, and says when it replaces an earlier output.
+- 3MF files are written beside the target and then swapped in, so a crash or full disk can't leave a broken file
+  in place of a good one.
+- Very large inputs (SVG over 50 MB, 3MF parts over 512 MB), over-complex designs, and output-folder problems now
+  give a clear error instead of a traceback.
+
 ## 0.1.1 — 2026-11-07
 
 ### Security

@@ -91,6 +91,7 @@ Useful options (`svg-keychain generate --help` for all):
 | `--double-sided` | off | Keychain reads on both faces |
 | `--base-colour '#0f4c81'` | none | Adds a backing plate |
 | `--path-parser` | off | Skip the Cairo reader |
+| `--overwrite` | off | Replace 3MF files that already exist (the input is never replaced) |
 
 ## Examples
 
