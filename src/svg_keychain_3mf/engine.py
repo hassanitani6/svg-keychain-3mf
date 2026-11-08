@@ -602,6 +602,35 @@ def parse_svg_raster(filepath, log=None, target_mm=60.0, min_area_mm2=1.0,
     return geoms, (maxx - minx, maxy - miny)
 
 
+# Inputs come from the internet (flag SVGs, shared 3MFs). Real ones are a few MB; these caps stop a
+# malicious or broken file from exhausting memory before anything useful happens.
+MAX_SVG_BYTES = 50 * 1024 * 1024
+MAX_3MF_MEMBER_BYTES = 512 * 1024 * 1024
+
+
+def _check_size(nbytes, limit, what):
+    if nbytes > limit:
+        raise ValueError(f"{what} is too large ({nbytes / 1e6:.0f} MB; the limit is {limit / 1e6:.0f} MB)")
+
+
+def same_file(a, b):
+    """True when two paths are one file: identical, differing only in letter case on a case-insensitive
+    disk, or linked (symbolic or hard link)."""
+    a, b = Path(a), Path(b)
+    try:
+        return a.resolve() == b.resolve() or (a.exists() and b.exists() and os.path.samefile(a, b))
+    except OSError:
+        return False
+
+
+def check_output_path(dest, src, overwrite):
+    """Raise ValueError if writing dest would replace the input, or an existing file without overwrite."""
+    if same_file(dest, src):
+        raise ValueError(f"{Path(dest).name} would replace the input file; choose another output folder")
+    if Path(dest).exists() and not overwrite:
+        raise ValueError(f"{dest} already exists (use --overwrite to replace it)")
+
+
 def parse_svg_auto(filepath, log=None, prefer_raster=True, **kw):
     """Read an SVG into {colour: geometry}. Uses the render-then-vectorize
     backend when available (faithful on complex flags); falls back to the
@@ -614,6 +643,7 @@ def parse_svg_auto(filepath, log=None, prefer_raster=True, **kw):
     BambuStudio (which is Y-up)."""
     if log is None:
         log = print
+    _check_size(os.path.getsize(filepath), MAX_SVG_BYTES, Path(filepath).name)
     # Detail threshold scales with the nozzle: a 0.2 mm nozzle resolves fine
     # emblems (Mexico's eagle, coats of arms), so keep small pieces; a 0.4 mm
     # nozzle can't print them, so the coarser default stays (other flags
@@ -1248,6 +1278,8 @@ def parse_3mf(path, log=None):
 
     with zipfile.ZipFile(path) as zf:
         names_in_zip = zf.namelist()
+        for info in zf.infolist():
+            _check_size(info.file_size, MAX_3MF_MEMBER_BYTES, f"{Path(path).name}: {info.filename}")
 
         # ── extruder index → hex colour ─────────────────────────────────────
         color_by_extruder = {}
@@ -2706,6 +2738,18 @@ def build_magnet_meshes(color_geoms, max_size_mm=60.0, thickness_mm=5.0,
 # ──────────────────────────────────────────────────────────────
 
 def write_3mf(color_meshes, output_path, log=None):
+    """Write a BambuStudio-native 3MF (see _write_3mf_to). The file is written beside the target and then
+    swapped in, so a crash or full disk never leaves a half-written file where a good one was."""
+    part = f"{output_path}.part"
+    try:
+        _write_3mf_to(color_meshes, part, output_path, log)
+        os.replace(part, output_path)
+    except BaseException:
+        Path(part).unlink(missing_ok=True)
+        raise
+
+
+def _write_3mf_to(color_meshes, output_path, shown_path, log=None):
     """
     Write a BambuStudio-native 3MF.
 
@@ -2722,7 +2766,7 @@ def write_3mf(color_meshes, output_path, log=None):
 
     colors = list(color_meshes.keys())
     n = len(colors)
-    log(f"Writing 3MF: {n} colour zones → {Path(output_path).name}")
+    log(f"Writing 3MF: {n} colour zones → {Path(shown_path).name}")
 
     SLOTS = max(12, n)
     if n > 16:
@@ -2895,7 +2939,7 @@ def write_3mf(color_meshes, output_path, log=None):
         }
         zf.writestr('Metadata/project_settings.config', json.dumps(project, indent=2))
 
-    log(f"Saved: {output_path}")
+    log(f"Saved: {shown_path}")
     log("\nFilament guide — load these colours in Bambu Studio:")
     for i, color in enumerate(colors):
         dc = _display_colour(color)
@@ -3202,6 +3246,12 @@ class App(_TkBase):
         threading.Thread(target=self._worker, args=(svg_path,), daemon=True).start()
 
 
+    def _check_output(self, dest, input_path):
+        # The app has no overwrite prompt: it may replace its own earlier output (and says so), never the input.
+        check_output_path(dest, input_path, overwrite=True)
+        if Path(dest).exists():
+            self._log(f"Replacing existing {Path(dest).name}")
+
     def _worker(self, input_path):
         try:
             # ── Parse input (SVG or 3MF) ─────────────────────────────────────
@@ -3287,6 +3337,7 @@ class App(_TkBase):
                     )
                 kp = Path(input_path).parent / f"{stem}_keychain.3mf"
                 self._log("\nWriting keychain 3MF…")
+                self._check_output(kp, input_path)
                 write_3mf(km, str(kp), log=self._log)
                 generated.append((kp, len(km), "Keychain"))
 
@@ -3308,6 +3359,7 @@ class App(_TkBase):
                 )
                 pp = Path(input_path).parent / f"{stem}_plaque.3mf"
                 self._log("\nWriting plaque 3MF…")
+                self._check_output(pp, input_path)
                 write_3mf(pm, str(pp), log=self._log)
                 generated.append((pp, len(pm), "Plaque"))
 
@@ -3330,6 +3382,7 @@ class App(_TkBase):
                     )
                     mp = Path(input_path).parent / f"{stem}_magnet.3mf"
                     self._log("\nWriting fridge magnet 3MF…")
+                    self._check_output(mp, input_path)
                     write_3mf(mm, str(mp), log=self._log)
                     generated.append((mp, len(mm), "Fridge Magnet"))
                 except ValueError as e:

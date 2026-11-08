@@ -41,6 +41,7 @@ def _parser() -> argparse.ArgumentParser:
     g.add_argument("--merge-threshold", type=int, default=15, help="merge colours closer than this RGB distance (0-441; default 15)")
     g.add_argument("--path-parser", action="store_true",
                    help="skip the render-then-trace reader and use the plain SVG path parser")
+    g.add_argument("--overwrite", action="store_true", help="replace 3MF files that already exist")
     g.add_argument("-q", "--quiet", action="store_true")
 
     d = sub.add_parser("doctor", help="print an environment report to paste into a bug report")
@@ -81,6 +82,31 @@ def _generate(args) -> int:
     if args.base_colour and not args.base_colour.startswith("#"):
         args.base_colour = "#" + args.base_colour
 
+    out_dir = args.out_dir or src.parent
+    stem = src.stem
+    for suf in ("_keychain", "_plaque", "_magnet"):
+        if stem.endswith(suf):
+            stem = stem[: -len(suf)]
+            break
+    targets = {kind: out_dir / f"{stem}_{kind}.3mf" for kind in wanted}
+    try:
+        for path in targets.values():
+            engine.check_output_path(path, src, args.overwrite)
+    except ValueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+
+    try:
+        return _build_and_write(args, engine, src, wanted, out_dir, targets, log)
+    except (RecursionError, MemoryError) as e:
+        print(f"error: {src.name} is too complex to process ({type(e).__name__}). "
+              "Simplify the design or flatten it to plain paths.", file=sys.stderr)
+    except OSError as e:
+        print(f"error: {e.strerror or e} ({e.filename or out_dir})", file=sys.stderr)
+    return 1
+
+
+def _build_and_write(args, engine, src, wanted, out_dir, targets, log) -> int:
     import xml.etree.ElementTree as ET
     import zipfile
     try:
@@ -97,13 +123,7 @@ def _generate(args) -> int:
               "(e.g. Inkscape: Path → Object to Path) and save as plain SVG.", file=sys.stderr)
         return 1
 
-    out_dir = args.out_dir or src.parent
     out_dir.mkdir(parents=True, exist_ok=True)
-    stem = src.stem
-    for suf in ("_keychain", "_plaque", "_magnet"):
-        if stem.endswith(suf):
-            stem = stem[: -len(suf)]
-            break
     common = dict(min_area_mm2=args.min_area, base_colour=args.base_colour.lower() if args.base_colour else None,
                   base_thickness_mm=args.base_thickness, nozzle_mm=args.nozzle,
                   island_rel_threshold=0.01, color_merge_threshold=args.merge_threshold, log=log)
@@ -128,7 +148,7 @@ def _generate(args) -> int:
             except ValueError as e:
                 print(f"magnet skipped: {e}", file=sys.stderr)
                 continue
-        path = out_dir / f"{stem}_{kind}.3mf"
+        path = targets[kind]
         engine.write_3mf(meshes, str(path), log=log)
         written.append(path)
         print(f"{path}\t{len(meshes)} colour parts")
