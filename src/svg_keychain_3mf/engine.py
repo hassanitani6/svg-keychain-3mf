@@ -2075,9 +2075,9 @@ def _find_magnet_positions(combined, mag_r, clearance=0.5):
 
     Tries two layouts, both scanning the actual shape (not bounding box):
       1. Side-by-side  — left/right at ~1/3 and 2/3 of the row width.
-         Works for wide shapes (Egypt, Canada, France, …).
+         Works for wide shapes (e.g. a wide rectangle or a heart).
       2. Top-and-bottom — one near top, one near bottom, centred horizontally.
-         Works for tall/narrow shapes (Palestine, Italy, …).
+         Works for tall/narrow shapes.
     Falls back to a tighter clearance if the first pass fails, then retries on
     the convex hull (avoids coastline inlets blocking clearance checks), then
     uses a single centred pocket as a last resort.
@@ -2335,8 +2335,8 @@ def build_keychain_meshes(color_geoms, max_size_mm=60.0, thickness_mm=5.0,
     # Auto-detect: add a base only for genuine geographic islands — i.e. pieces
     # that are both large enough (≥ 0.5 % of the main body) AND physically
     # separated from it (gap ≥ 0.2 mm at print scale).  This rejects flag-stripe
-    # SVGs where stripes nearly-touch (gap ≈ 0 mm) while accepting real island
-    # nations like Japan, Canada, New Zealand, and France (Corsica).
+    # SVGs where stripes nearly-touch (gap ≈ 0 mm) while accepting map
+    # outlines with real offshore islands (e.g. a country map with separate islands).
     if not base_colour:
         combined_check = unary_union(list(scaled.values()))
         if isinstance(combined_check, MultiPolygon):
@@ -2456,9 +2456,8 @@ def build_keychain_meshes_double_sided(
     Each colour region is its own mesh extruded from z=0 to its own stepped
     height. At z=0 every region is present, so the full flag reads on the BOTTOM
     face; the differing heights give a 3D relief on the TOP face. No MMU paint
-    and no neutral core — this is the cheapest, cleanest way to get both faces
-    (matches the user's Palestine double-sided technique; "Option B" from the
-    3D-printing research). total_h sets the tallest step; base/island handling,
+    and no neutral core — this is the cheapest, cleanest way to get both faces.
+    total_h sets the tallest step; base/island handling,
     hole placement and nozzle-scaled island filtering all come from the stepped
     single-sided builder this delegates to.
 
@@ -2467,8 +2466,8 @@ def build_keychain_meshes_double_sided(
     if log is None:
         log = print
 
-    # Double-sided is achieved by colour=structure stepping (3D-print research
-    # "Option B"): each colour region is its own mesh from z=0 — so the flag
+    # Double-sided is achieved by colour=structure stepping: each colour region
+    # is its own mesh from z=0 — so the flag
     # reads on the BOTTOM face — up to its own stepped height, giving the 3D
     # relief on the TOP face. No MMU paint, no neutral core (those waste filament
     # and band on stepped walls). The stepped single-sided builder already
@@ -2685,7 +2684,7 @@ def build_magnet_meshes(color_geoms, max_size_mm=60.0, thickness_mm=5.0,
 
     # When a base is requested, compute its geometry now so that magnet
     # placement runs on the full convex base rectangle rather than the
-    # jagged map outline — this guarantees two pockets fit (e.g. Canada).
+    # jagged map outline — this guarantees two pockets fit (e.g. a map with deep inlets).
     if base_colour:
         base_rect = _make_base_shape(combined_scaled)
         placement_geom = base_rect

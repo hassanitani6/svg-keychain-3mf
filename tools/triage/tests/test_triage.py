@@ -110,7 +110,7 @@ def cfg_for(tmp_path, mode, *extra, **over):
 def issue(number=7, version="0.1.0", what="The ring hole is cut off at the edge.", author="someone", body=None):
     return {"number": number, "title": "Ring hole cut off on tall shapes", "author": {"login": author},
             "body": body if body is not None else FORM.format(version=version, what=what),
-            "updatedAt": "2026-11-07T15:00:00Z"}
+            "updatedAt": "2000-01-02T15:00:00Z"}
 
 
 def calls(tmp_path):
@@ -194,10 +194,10 @@ def test_prompt_injection_stops_before_any_ai_call(repo, tmp_path, payload):
 
 
 def test_personal_details_are_flagged_and_never_sent(repo, tmp_path):
-    what = "Fails for me. Contact jane.doe@example.com or 613-555-0142. Path: /Users/janedoe/designs/x.svg"
+    what = "Fails for me. Contact jane.doe@example.com or 555-010-0199. Path: /Users/janedoe/designs/x.svg"
     status, report = run(repo, tmp_path, data=issue(what=what))
     sent = (tmp_path / "state" / "prompt.txt").read_text(encoding="utf-8")
-    assert "jane.doe@example.com" not in sent and "613-555-0142" not in sent and "janedoe" not in sent
+    assert "jane.doe@example.com" not in sent and "555-010-0199" not in sent and "janedoe" not in sent
     assert "email address" in report and "phone number" in report
 
 
