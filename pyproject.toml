@@ -5,7 +5,7 @@ description = "Turn flat-colour SVGs (like flag maps) into multi-colour 3MF keyc
 readme = "README.md"
 license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "numpy>=1.24",
     "shapely>=2.1",
@@ -22,7 +22,7 @@ classifiers = [
 
 [project.optional-dependencies]
 # Higher-fidelity SVG reading (clips, masks, overlapping strokes). Needs the system Cairo library.
-render = ["cairosvg>=2.7", "opencv-python-headless>=4.8"]
+render = ["cairosvg>=2.7", "opencv-python-headless>=4.8", "pillow>=13.0"]
 
 [project.scripts]
 svg-keychain = "svg_keychain_3mf.cli:main"

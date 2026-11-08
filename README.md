@@ -26,7 +26,7 @@ it — needs a licence from the author.** See [Licence](#licence).
 
 ## Install
 
-Needs Python 3.10 or newer.
+Needs Python 3.11 or newer.
 
 **One command** (with [pipx](https://pipx.pypa.io/)):
 

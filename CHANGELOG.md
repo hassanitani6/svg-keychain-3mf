@@ -2,7 +2,11 @@
 
 All notable changes to this project are listed here. Versions follow [Semantic Versioning](https://semver.org/).
 
-## 0.1.1 — unreleased
+## 0.1.1 — 2026-11-07
+
+### Security
+- Requires Python 3.11 or newer (Python 3.10 reached end of life in October 2026). This lets the optional renderer
+  use Pillow 13, which fixes the known vulnerabilities in earlier Pillow releases.
 
 ### Licence
 - From this version on, the project is licensed under PolyForm Noncommercial 1.0.0. Commercial use needs a licence
