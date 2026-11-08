@@ -1,6 +1,9 @@
 # Contributing
 
-Thanks for helping! Small, focused pull requests are easiest to review.
+Thanks for helping! Bug reports, test SVGs that break the tool, and ideas are very welcome as issues.
+
+**Code pull requests are not accepted at the moment**, so that the author can keep offering commercial licences.
+If you have a fix, describe it in an issue (a small diff in the issue is fine) and it may be added by the author.
 
 ## Set up
 

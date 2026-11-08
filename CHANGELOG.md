@@ -4,6 +4,10 @@ All notable changes to this project are listed here. Versions follow [Semantic V
 
 ## 0.1.1 — unreleased
 
+### Licence
+- From this version on, the project is licensed under PolyForm Noncommercial 1.0.0. Commercial use needs a licence
+  from the author. Version 0.1.0 remains available under the MIT licence.
+
 ### Fixed
 - Windows: text files are read and written as UTF-8, so triage reports and SVG text are no longer garbled.
 - Windows: `svg-keychain generate` no longer crashes after writing the 3MF when the file name has characters the

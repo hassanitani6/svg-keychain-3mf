@@ -3,6 +3,9 @@
 Turn a flat-colour SVG — a flag map, a logo, a simple badge — into a **multi-colour 3MF** you can open in
 Bambu Studio and print with an AMS: every colour becomes its own part, already assigned to its own filament slot.
 
+**Free for personal, hobby, educational and non-profit use. Commercial use — including selling items made with
+it — needs a licence from the author.** See [Licence](#licence).
+
 ![Three synthetic examples: a stepped tricolour keychain, an emblem plaque and a map keychain](docs/demo.png)
 
 ## What it does
@@ -139,5 +142,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Security problems: see [SECURITY.md](SEC
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE). Bambu Lab and Bambu Studio are trademarks of their owner; this project is not
+[PolyForm Noncommercial 1.0.0](LICENSE): you may use, copy and change it for any noncommercial purpose — personal
+projects, hobbies, study, research, schools, charities and other non-profits. Using it in a business, or to make
+things you sell, needs a commercial licence: open an issue titled "Commercial licence" and the author will get in
+touch. This is a source-available licence, not an OSI open-source licence. Versions before 0.1.1 were released
+under the MIT licence.
+
+Bambu Lab and Bambu Studio are trademarks of their owner; this project is not
 affiliated with or endorsed by them.

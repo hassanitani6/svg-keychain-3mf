@@ -3,7 +3,7 @@ name = "svg-keychain-3mf"
 version = "0.1.1"
 description = "Turn flat-colour SVGs (like flag maps) into multi-colour 3MF keychains, plaques and magnets for Bambu Studio."
 readme = "README.md"
-license = "MIT"
+license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
